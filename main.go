@@ -11,30 +11,45 @@ func main() {
 	router.GET("/contacts", getContacts)
 	router.GET("/contacts/:id", getContact)
 	router.DELETE("/contacts/:id", deleteContact)
-	router.PUT("/contacts/:id", editContact)
+	router.PUT("/contacts", editContact)
 	router.POST("/contacts", createContact)
 
 	router.Run("localhost:8080")
 }
 
 type Contact struct {
-	ID          int    `json:"id" bson:"_id"`
-	FirstName   string `json:"first_name" bson:"first_name"`
-	LastName    string `json:"last_name" bson:"last_name"`
-	PhoneNumber string `json:"phone_number" bson:"phone_number"`
-	Address     string `json:"address" bson:"address"`
+	ID          int    `json:"id" binding:"required" bson:"_id"`
+	FirstName   string `json:"first_name" binding:"required" bson:"first_name"`
+	LastName    string `json:"last_name" binding:"required" bson:"last_name"`
+	PhoneNumber string `json:"phone_number" binding:"required" bson:"phone_number"`
+	Address     string `json:"address" binding:"required" bson:"address"`
 }
 
 func getContacts(c *gin.Context) {
 	database := getDatabase()
 	defer database.disconnect()
 
-	database.load(0, "contacts")
+	pageStr := c.Query("page")
+	if pageStr == "" {
+		c.JSON(400, gin.H{"error": "Please provide page number (0+)"})
+		return
+	}
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 0 {
+		c.JSON(400, gin.H{"error": "Invalid Page Number"})
+		return
+	}
+
+	contacts := database.loadContactsByPagination("contacts", page)
+
+	c.JSON(400, gin.H{"contacts": contacts})
 }
 
 func getContact(c *gin.Context) {
 	database := getDatabase()
 	defer database.disconnect()
+
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -42,7 +57,10 @@ func getContact(c *gin.Context) {
 		return
 	}
 
-	database.load(id, "contacts")
+	var contact Contact
+	result := database.loadByID(id, "contacts", contact)
+
+	c.JSON(400, gin.H{"contacts": result})
 }
 
 func deleteContact(c *gin.Context) {
@@ -56,8 +74,7 @@ func deleteContact(c *gin.Context) {
 		return
 	}
 
-	doc := Contact{ID: id}
-	database.delete(doc, "contacts")
+	database.delete(id, "contacts")
 }
 
 func editContact(c *gin.Context) {
@@ -70,7 +87,7 @@ func editContact(c *gin.Context) {
 		return
 	}
 
-	database.replace(contact, "contacts")
+	database.replace(contact.ID, contact, "contacts")
 }
 
 func createContact(c *gin.Context) {

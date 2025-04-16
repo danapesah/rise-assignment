@@ -17,13 +17,12 @@ type MongoDB struct {
 func getDatabase() (m MongoDB) {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI("mongodb://127.0.0.1:27017").SetServerAPIOptions(serverAPI)
-	// Create a new client and connect to the server
+
 	client, err := mongo.Connect(opts)
 	if err != nil {
 		panic(err)
 	}
 
-	// Send a ping to confirm a successful connection
 	var result bson.M
 	if err := client.Database("admin").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Decode(&result); err != nil {
 		panic(err)
@@ -53,32 +52,47 @@ func (m MongoDB) save(doc interface{}, collection string) {
 	}
 }
 
-func (m MongoDB) delete(doc interface{}, collection string) {
-	_, err := m.database.Collection(collection).DeleteOne(context.TODO(), doc)
+func (m MongoDB) delete(id int, collection string) {
+	filter := bson.D{{"_id", id}}
+
+	_, err := m.database.Collection(collection).DeleteOne(context.TODO(), filter)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func (m MongoDB) replace(doc interface{}, collection string) {
-	_, err := m.database.Collection(collection).ReplaceOne(context.TODO(), doc, doc)
+func (m MongoDB) replace(id int, doc interface{}, collection string) {
+	filter := bson.D{{"_id", id}}
+
+	_, err := m.database.Collection(collection).ReplaceOne(context.TODO(), filter, doc)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func (m MongoDB) load(id int, collection string) () {
-	if id != 0 {
-		filter := bson.D{{"_id", id}}
-	} else {
-		filter := bson.D{{"$limit", 3}}
-	}
+func (m MongoDB) loadByID(id int, collection string, structure interface{}) (result interface{}) {
+	filter := bson.D{{"_id", id}}
 
-	var contact Contact
-	err := m.database.Collection(collection).FindOne(context.TODO(), filter).Decode(&contact)
+	err := m.database.Collection(collection).FindOne(context.TODO(), filter).Decode(&structure)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(contact)
+	return structure
+}
+
+func (m MongoDB) loadContactsByPagination(collection string, page int) (contacts []Contact) {
+	filter := bson.D{}
+
+	skip := page * 10
+	opts := options.Find().SetLimit(int64(10)).SetSkip(int64(skip))
+	cursor, err := m.database.Collection(collection).Find(context.TODO(), filter, opts)
+
+	var result []Contact
+	if err = cursor.All(context.TODO(), &result); err != nil {
+		panic(err)
+	}
+
+	return result
+
 }

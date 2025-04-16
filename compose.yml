@@ -1,0 +1,9 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+  mongodb:
+    image: "mongodb/mongodb-community-server:latest"
+    ports:
+      - "27017:27017"
