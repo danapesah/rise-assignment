@@ -16,7 +16,7 @@ type MongoDB struct {
 
 func getDatabase() (m MongoDB) {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI("mongodb://127.0.0.1:27017").SetServerAPIOptions(serverAPI)
+	opts := options.Client().ApplyURI("mongodb://mongodb:27017").SetServerAPIOptions(serverAPI)
 
 	client, err := mongo.Connect(opts)
 	if err != nil {

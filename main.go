@@ -14,7 +14,7 @@ func main() {
 	router.PUT("/contacts", editContact)
 	router.POST("/contacts", createContact)
 
-	router.Run("localhost:8080")
+	router.Run(":8080")
 }
 
 type Contact struct {
@@ -43,7 +43,7 @@ func getContacts(c *gin.Context) {
 
 	contacts := database.loadContactsByPagination("contacts", page)
 
-	c.JSON(400, gin.H{"contacts": contacts})
+	c.JSON(200, gin.H{"contacts": contacts})
 }
 
 func getContact(c *gin.Context) {
@@ -60,7 +60,7 @@ func getContact(c *gin.Context) {
 	var contact Contact
 	result := database.loadByID(id, "contacts", contact)
 
-	c.JSON(400, gin.H{"contacts": result})
+	c.JSON(200, gin.H{"contacts": result})
 }
 
 func deleteContact(c *gin.Context) {
