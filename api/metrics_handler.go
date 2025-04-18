@@ -23,9 +23,9 @@ type Metrics struct {
 	dbSaveAvgCount      int `bson:"db_save_avg_count"`
 }
 
-func loadMetrics(database db.MongoDB) (metrics Metrics) {
-	return database.LoadByID(0, "metrics", metrics).(Metrics)
-}
+//func loadMetrics(database db.MongoDB) (metrics Metrics) {
+//	//return database.LoadByID("metrics", "metrics", metrics).(Metrics)
+//}
 
 func (metrics Metrics) updateConnectionAVGTime(database db.MongoDB, connectionTime int) {
 	averageTime := metrics.dbConnectionAvgTime
@@ -79,7 +79,7 @@ func GetMetrics(c *gin.Context) {
 	database := db.GetDatabase()
 	defer database.Disconnect()
 
-	database.LoadByID(0, "metrics", metrics)
+	//database.Load("metric", "metrics", metrics)
 
 	c.JSON(200, gin.H{"metrics": metrics})
 }

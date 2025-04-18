@@ -12,6 +12,7 @@ FROM gcr.io/distroless/base-debian12 AS binary-image
 WORKDIR /
 
 COPY --from=builder /docker-rise-assignment /docker-rise-assignment
+COPY --from=builder /app/static/ ./static/
 
 EXPOSE 8080
 

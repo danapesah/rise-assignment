@@ -52,19 +52,19 @@ func (m MongoDB) Save(doc interface{}, collection string) {
 	}
 }
 
-func (m MongoDB) Delete(id int, collection string) {
-	filter := bson.D{{"_id", id}}
+func (m MongoDB) Delete(structureInput interface{}, collection string) {
+	filter, err := bson.Marshal(structureInput)
 
-	_, err := m.database.Collection(collection).DeleteOne(context.TODO(), filter)
+	_, err = m.database.Collection(collection).DeleteOne(context.TODO(), filter)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func (m MongoDB) Replace(id int, doc interface{}, collection string) {
-	filter := bson.D{{"_id", id}}
+func (m MongoDB) Replace(structureInput interface{}, doc interface{}, collection string) {
+	filter, err := bson.Marshal(structureInput)
 
-	_, err := m.database.Collection(collection).ReplaceOne(context.TODO(), filter, doc, options.Replace().SetUpsert(true))
+	_, err = m.database.Collection(collection).ReplaceOne(context.TODO(), filter, doc)
 	if err != nil {
 		panic(err)
 	}
@@ -79,18 +79,11 @@ func (m MongoDB) Update(id string, doc interface{}, collection string) {
 	}
 }
 
-func (m MongoDB) LoadByID(id int, collection string, structure interface{}) (result interface{}) {
-	filter := bson.D{{"_id", id}}
+func (m MongoDB) Load(structureInput interface{}, collection string) (resultCursor *mongo.Cursor, err error) {
+	filter, err := bson.Marshal(structureInput)
 
-	err := m.database.Collection(collection).FindOne(context.TODO(), filter).Decode(&structure)
-	if err == mongo.ErrNoDocuments {
-		return structure
-	}
-	//
-	//if err != nil {
-	//	panic(err)
-	//}
-	return structure
+	cursor, err := m.database.Collection(collection).Find(context.TODO(), filter)
+	return cursor, err
 }
 
 func (m MongoDB) LoadByPagination(collection string, page int) (resultCursor *mongo.Cursor, err error) {
