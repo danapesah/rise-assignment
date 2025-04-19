@@ -36,7 +36,7 @@ This project includes a simple HTML, CSS, and JavaScript frontend.
 
 ### 1. Clone the repo
 
-git clone https://github.com/yourname/my-go-api.git
+git clone https://github.com/danapesah/rise-assignment.git
 cd riseAssignment 
 
 ### 2. Setup docker
