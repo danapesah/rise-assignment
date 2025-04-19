@@ -10,43 +10,41 @@ This web server API was built with [Go V.1.24](https://golang.org/), [Gin](https
 - 🍃 MongoDB for persistent storage
 - 📈 Prometheus metrics exposed at `/metrics`
 - 📄 Basic CRUD for Contact entries
-- 
+  
 ## 🖥️ Frontend
 
 This project includes a simple HTML, CSS, and JavaScript frontend.
 
 ## 📁 Project Structure
-/app
 
-├── main.go              # Entry point
-
-├── api/                 # Route handlers
-
-├── db/                  # db (mongodb) handlers
-
-├── static/              # frontend static files
-
-├── compose.yml
-
-└── Dockerfile
-
----
+```bash
+rise-assignment/
+├── main.go             # Application entry point
+├── api/                # Route handlers
+├── db/                 # MongoDB integration and logic
+├── static/             # Frontend static files (HTML, JS, CSS)
+├── compose.yml         # Docker Compose configuration
+└── Dockerfile          # Docker image definition
+```
 
 ## 🛠️ Setup
 
 ### 1. Clone the repo
 
+```bash
 git clone https://github.com/danapesah/rise-assignment.git
-
 cd rise-assignment
+```
 
 ### 2. Setup docker
+```bash
 docker compose up
+```
 
 ### 🌐 How to Use
 
 Once the backend server is running (on [http://localhost:8080](http://localhost:8080)), the frontend can be accessed at:
-http://localhost:8080/
+`http://localhost:8080/`
 
 ## 📡 Available Endpoints
 
@@ -92,6 +90,7 @@ To update a contact, send a `PUT` request with a **JSON body** containing the fo
 
 | Field          | Type     | Required | Description          |
 |----------------|----------|----------|----------------------|
+| `id`           | `string` | ✅ Yes    | User ID created randomly by mongo|
 | `first_name`   | `string` | ✅ Yes    | Contact's first name |
 | `last_name`    | `string` | ✅ Yes    | Contact's last name  |
 | `phone_number` | `string` | ✅ Yes    | Phone number         |
