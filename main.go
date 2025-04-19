@@ -1,87 +1,26 @@
 package main
 
 import (
-	"strconv"
-
 	"github.com/gin-gonic/gin"
+	"riseAssignment/api"
 )
 
 func main() {
 	router := gin.Default()
-	router.GET("/contacts", getContacts)
-	router.GET("/contacts/:id", getContact)
-	router.DELETE("/contacts/:id", deleteContact)
-	router.PUT("/contacts/:id", editContact)
-	router.POST("/contacts", createContact)
+	api.RegisterMetrics()
 
-	router.Run("localhost:8080")
-}
+	router.Static("/static", "./static")
 
-type Contact struct {
-	ID          int    `json:"id" bson:"_id"`
-	FirstName   string `json:"first_name" bson:"first_name"`
-	LastName    string `json:"last_name" bson:"last_name"`
-	PhoneNumber string `json:"phone_number" bson:"phone_number"`
-	Address     string `json:"address" bson:"address"`
-}
+	router.GET("/", func(c *gin.Context) {
+		c.File("./static/index.html")
+	})
 
-func getContacts(c *gin.Context) {
-	database := getDatabase()
-	defer database.disconnect()
+	router.GET("/contacts", api.GetContacts)
+	router.DELETE("/contacts/:id", api.DeleteContact)
+	router.PUT("/contacts", api.EditContact)
+	router.POST("/contacts", api.CreateContact)
 
-	database.load(0, "contacts")
-}
+	router.GET("/metrics", api.PrometheusHandler())
 
-func getContact(c *gin.Context) {
-	database := getDatabase()
-	defer database.disconnect()
-	idStr := c.Param("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid ID"})
-		return
-	}
-
-	database.load(id, "contacts")
-}
-
-func deleteContact(c *gin.Context) {
-	database := getDatabase()
-	defer database.disconnect()
-
-	idStr := c.Param("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid ID"})
-		return
-	}
-
-	doc := Contact{ID: id}
-	database.delete(doc, "contacts")
-}
-
-func editContact(c *gin.Context) {
-	database := getDatabase()
-	defer database.disconnect()
-
-	var contact Contact
-	if err := c.ShouldBindJSON(&contact); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	database.replace(contact, "contacts")
-}
-
-func createContact(c *gin.Context) {
-	database := getDatabase()
-	defer database.disconnect()
-
-	var contact Contact
-	if err := c.ShouldBindJSON(&contact); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	database.save(contact, "contacts")
+	router.Run(":8080")
 }
