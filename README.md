@@ -37,7 +37,8 @@ This project includes a simple HTML, CSS, and JavaScript frontend.
 ### 1. Clone the repo
 
 git clone https://github.com/danapesah/rise-assignment.git
-cd riseAssignment 
+
+cd rise-assignment
 
 ### 2. Setup docker
 docker compose up
@@ -251,19 +252,20 @@ To update a contact, send a `PUT` request with a **JSON body** containing the fo
 ## 🧪 Testing `DELETE /contacts/:id`
 ### 	Removes a contact by its ID, which you can retrieve using the GET /contacts request
 - **Method**: `DELETE`
-- **Endpoint**: `http://localhost:8080/<ID>`
+- **Endpoint**: `http://localhost:8080/contacts/<ID>`
 
 ## 🧪 Testing `PUT /contacts`
 ### 	Edits the contact by its ID, which you can retrieve using the GET /contacts request
 - **Method**: `PUT`
-- **Endpoint**: `http://localhost:8080/<ID>`
+- **Endpoint**: `http://localhost:8080/contacts`
 - **Body** (JSON):
 ```json
 {
   "id": <string>
-  "first_name": "Frida",
+  "first_name": "Alan",
   "last_name": "Kahlo",
   "phone_number": "050-7890123",
   "address": "Coyoacán, Mexico City"
 }
 ```
+Search for “Alan” again to verify the changes.
