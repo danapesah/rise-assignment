@@ -55,10 +55,10 @@
 
 	$('.contacts-list-form-wrapper .search').on('click', function(event) {
 		const params = new URLSearchParams({
-			first_name: $(".contacts-list-form-wrapper #first_name_filter").val().trim(),
-			last_name: $(".contacts-list-form-wrapper #last_name_filter").val().trim(),
-			phone_number: $(".contacts-list-form-wrapper #phone_number_filter").val().trim(),
-			address: $(".contacts-list-form-wrapper #address_filter").val().trim()
+			first_name: $(".contacts-list-form-wrapper #first-name-filter").val().trim(),
+			last_name: $(".contacts-list-form-wrapper #last-name-filter").val().trim(),
+			phone_number: $(".contacts-list-form-wrapper #phone-number-filter").val().trim(),
+			address: $(".contacts-list-form-wrapper #address-filter").val().trim()
 		});
 
 		fetch(`/contacts?${params.toString()}`, {

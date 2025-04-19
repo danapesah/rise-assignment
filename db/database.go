@@ -70,19 +70,11 @@ func (m MongoDB) Replace(structureInput interface{}, doc interface{}, collection
 	}
 }
 
-func (m MongoDB) Update(id string, doc interface{}, collection string) {
-	filter := bson.D{{"_id", id}}
-
-	_, err := m.database.Collection(collection).UpdateOne(context.TODO(), filter, doc)
-	if err != nil {
-		panic(err)
-	}
-}
-
 func (m MongoDB) Load(structureInput interface{}, collection string) (resultCursor *mongo.Cursor, err error) {
 	filter, err := bson.Marshal(structureInput)
 
 	cursor, err := m.database.Collection(collection).Find(context.TODO(), filter)
+
 	return cursor, err
 }
 

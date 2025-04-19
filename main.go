@@ -7,11 +7,10 @@ import (
 
 func main() {
 	router := gin.Default()
+	api.RegisterMetrics()
 
-	// Serve static files under /static/
 	router.Static("/static", "./static")
 
-	// Serve index.html on /
 	router.GET("/", func(c *gin.Context) {
 		c.File("./static/index.html")
 	})
@@ -20,6 +19,8 @@ func main() {
 	router.DELETE("/contacts/:id", api.DeleteContact)
 	router.PUT("/contacts", api.EditContact)
 	router.POST("/contacts", api.CreateContact)
+
+	router.GET("/metrics", api.PrometheusHandler())
 
 	router.Run(":8080")
 }
